@@ -35,6 +35,10 @@ config ALIF_BLE_HOST_ADDL_ENV_HEAPSIZE
 	  Depending on the environments enabled in the stack the environment
 	  heap size allocated needs to be adjusted.
 
+config ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
+	bool "Enable sync timer using UTIMER"
+	default y
+
 endmenu
 
 endif

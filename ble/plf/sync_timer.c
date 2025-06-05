@@ -22,9 +22,6 @@ LOG_MODULE_REGISTER(iso_sync_timer);
 #define EVTRTR_SELECT_GROUP_2 0x2
 #define EVTRTR_SELECT_GROUP_3 0x3
 
-static void (*sync_timer_cap_cb)(void);
-static void (*sync_timer_ovf_cb)(void);
-
 /* UTIMER definitions */
 #define UTIMER_BASE    0x48000000u
 #define UTIMER_CHAN(n) ((utimer_chan_t *)(UTIMER_BASE + 0x1000u * ((n) + 1u)))
@@ -149,6 +146,10 @@ typedef struct {
 	volatile uint32_t glb_driver_oen;   /**< Channel Driver oen Register >*/
 } TIMER_RegInfo;
 
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
+static void (*sync_timer_cap_cb)(void);
+static void (*sync_timer_ovf_cb)(void);
+
 static void overflow_irq_handler(const void *context)
 {
 	(void)context;
@@ -178,9 +179,11 @@ static void capture_irq_handler(const void *context)
 		sync_timer_cap_cb();
 	}
 }
+#endif
 
 int32_t sync_timer_init(void)
 {
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
 	/* Enable clock for DMA2 and EVTRTR2 */
 	mem_addr_t reg = 0x43007010;
 	uint32_t orig = sys_read32(reg);
@@ -227,8 +230,10 @@ int32_t sync_timer_init(void)
 		    0);
 	IRQ_CONNECT(ISO_EVT_UTIMER_CAP_A_IRQ, ISO_EVT_UTIMER_CAP_IRQ_PRIO, capture_irq_handler, 0,
 		    0);
-
 	LOG_DBG("ISO sync timer initialised");
+#else
+	LOG_DBG("ISO sync timer not used");
+#endif
 
 	return 0;
 }
@@ -236,6 +241,7 @@ int32_t sync_timer_init(void)
 uint32_t sync_timer_start(void (*sync_timer_capture_evt_cb)(void),
 			  void (*sync_timer_overflow_evt_cb)(void))
 {
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
 	/* Enable IRQs */
 	sync_timer_restore_evts();
 	sync_timer_cap_cb = sync_timer_capture_evt_cb;
@@ -245,28 +251,40 @@ uint32_t sync_timer_start(void (*sync_timer_capture_evt_cb)(void),
 	((TIMER_RegInfo *)(UTIMER_BASE))->glb_cntr_start |= (1 << ISO_EVT_UTIMER_CHAN);
 
 	/* LOG_DBG("ISO sync timer started"); */
-
+#endif
 	return CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC;
 }
 
 uint32_t sync_timer_get_curr_cnt(void)
 {
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
 	return UTIMER_CHAN(ISO_EVT_UTIMER_CHAN)->cntr;
+#else
+	return 0;
+#endif
 }
 
 uint32_t sync_timer_get_last_capture(void)
 {
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
 	return UTIMER_CHAN(ISO_EVT_UTIMER_CHAN)->capture_a;
+#else
+	return 0;
+#endif
 }
 
 void sync_timer_disable_evts(void)
 {
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
 	irq_disable(ISO_EVT_UTIMER_OVF_IRQ);
 	irq_disable(ISO_EVT_UTIMER_CAP_A_IRQ);
+#endif
 }
 
 void sync_timer_restore_evts(void)
 {
+#if CONFIG_ALIF_BLE_SYNC_TIMER_UTIMER_ENABLED
 	irq_enable(ISO_EVT_UTIMER_OVF_IRQ);
 	irq_enable(ISO_EVT_UTIMER_CAP_A_IRQ);
+#endif
 }
