@@ -48,34 +48,34 @@ static bool run_profile_initialized;
  */
 #if defined(CONFIG_ALIF_SE_DTS_RUN_PROFILE) || defined(CONFIG_ALIF_SE_DTS_OFF_PROFILE)
 
-#define _SE_DT_CAT_DCDC(t)      _SE_DT_DCDC_##t
-#define SE_DT_DCDC_MODE(t)      _SE_DT_CAT_DCDC(t)
-#define _SE_DT_DCDC_off         DCDC_MODE_OFF
-#define _SE_DT_DCDC_pfm_auto    DCDC_MODE_PFM_AUTO
-#define _SE_DT_DCDC_pfm_forced  DCDC_MODE_PFM_FORCED
-#define _SE_DT_DCDC_pwm         DCDC_MODE_PWM
+#define _SE_DT_CAT_DCDC(t)     _SE_DT_DCDC_##t
+#define SE_DT_DCDC_MODE(t)     _SE_DT_CAT_DCDC(t)
+#define _SE_DT_DCDC_off        DCDC_MODE_OFF
+#define _SE_DT_DCDC_pfm_auto   DCDC_MODE_PFM_AUTO
+#define _SE_DT_DCDC_pfm_forced DCDC_MODE_PFM_FORCED
+#define _SE_DT_DCDC_pwm        DCDC_MODE_PWM
 
-#define _SE_DT_CAT_AON_CLK(t)   _SE_DT_AON_CLK_##t
-#define SE_DT_AON_CLK(t)        _SE_DT_CAT_AON_CLK(t)
-#define _SE_DT_AON_CLK_lfrc     CLK_SRC_LFRC
-#define _SE_DT_AON_CLK_lfxo     CLK_SRC_LFXO
+#define _SE_DT_CAT_AON_CLK(t) _SE_DT_AON_CLK_##t
+#define SE_DT_AON_CLK(t)      _SE_DT_CAT_AON_CLK(t)
+#define _SE_DT_AON_CLK_lfrc   CLK_SRC_LFRC
+#define _SE_DT_AON_CLK_lfxo   CLK_SRC_LFXO
 
 #endif /* CONFIG_ALIF_SE_DTS_RUN_PROFILE || CONFIG_ALIF_SE_DTS_OFF_PROFILE */
 
 #ifdef CONFIG_ALIF_SE_DTS_RUN_PROFILE
 
-#define _SE_DT_CAT_RUN_CLK(t)   _SE_DT_RUN_CLK_##t
-#define SE_DT_RUN_CLK(t)        _SE_DT_CAT_RUN_CLK(t)
-#define _SE_DT_RUN_CLK_hfrc     CLK_SRC_HFRC
-#define _SE_DT_RUN_CLK_hfxo     CLK_SRC_HFXO
-#define _SE_DT_RUN_CLK_pll      CLK_SRC_PLL
+#define _SE_DT_CAT_RUN_CLK(t) _SE_DT_RUN_CLK_##t
+#define SE_DT_RUN_CLK(t)      _SE_DT_CAT_RUN_CLK(t)
+#define _SE_DT_RUN_CLK_hfrc   CLK_SRC_HFRC
+#define _SE_DT_RUN_CLK_hfxo   CLK_SRC_HFXO
+#define _SE_DT_RUN_CLK_pll    CLK_SRC_PLL
 
 #define AIPM_RUN_NODE DT_NODELABEL(aipm_run)
 
 struct aipm_profile_entry {
-	bool          is_default; /* true = no pm-state property = cold-boot default */
+	bool is_default; /* true = no pm-state property = cold-boot default */
 	enum pm_state state;
-	uint8_t       substate;
+	uint8_t substate;
 	run_profile_t profile;
 };
 
@@ -83,39 +83,39 @@ struct aipm_profile_entry {
  * Expand one aipm-run child node into an aipm_profile_entry
  * initialiser.
  */
-#define AIPM_CHILD_ENTRY(node_id) {						\
-	.is_default = !DT_NODE_HAS_PROP(node_id, pm_state),			\
-	.state      = (enum pm_state)DT_PROP_OR(node_id, pm_state, 0),		\
-	.substate   = (uint8_t)DT_PROP_OR(node_id, pm_substate, 0),		\
-	.profile = {								\
-		.power_domains   = DT_PROP_OR(node_id, aipm_power_domains,	\
-				   (PD_SSE700_AON_MASK | PD_SYST_MASK)),	\
-		.dcdc_voltage    = DT_PROP_OR(node_id, dcdc_voltage, 825),	\
-		.dcdc_mode       = SE_DT_DCDC_MODE(DT_STRING_TOKEN_OR(		\
-				       node_id, dcdc_mode, pwm)),		\
-		.aon_clk_src     = SE_DT_AON_CLK(DT_STRING_TOKEN_OR(		\
-				       node_id, aon_clk_src, lfxo)),		\
-		.run_clk_src     = SE_DT_RUN_CLK(DT_STRING_TOKEN_OR(		\
-				       node_id, clk_src, pll)),			\
-		.cpu_clk_freq    = (clock_frequency_t)DT_PROP(node_id,		\
-				       cpu_clk_freq),				\
-		.scaled_clk_freq = (scaled_clk_freq_t)DT_PROP_OR(		\
-				       node_id, scaled_clk_freq,		\
-				       ALIF_SCALED_FREQ_RC_ACTIVE_76_8_MHZ),	\
-		.memory_blocks   = DT_PROP_OR(node_id, memory_blocks, 0),	\
-		.ip_clock_gating = DT_PROP_OR(node_id, ip_clock_gating, 0),	\
-		.phy_pwr_gating  = DT_PROP_OR(node_id, phy_pwr_gating, 0),	\
-		.vdd_ioflex_3V3  = (ioflex_mode_t)DT_PROP_OR(node_id,		\
-				       vdd_ioflex, ALIF_IOFLEX_LEVEL_1V8),	\
-	},									\
-},
+#define AIPM_CHILD_ENTRY(node_id)                                                                  \
+	{                                                                                          \
+		.is_default = !DT_NODE_HAS_PROP(node_id, pm_state),                                \
+		.state = (enum pm_state)DT_PROP_OR(node_id, pm_state, 0),                          \
+		.substate = (uint8_t)DT_PROP_OR(node_id, pm_substate, 0),                          \
+		.profile =                                                                         \
+			{                                                                          \
+				.power_domains = DT_PROP_OR(node_id, aipm_power_domains,           \
+							    (PD_SSE700_AON_MASK | PD_SYST_MASK)),  \
+				.dcdc_voltage = DT_PROP_OR(node_id, dcdc_voltage, 825),            \
+				.dcdc_mode = SE_DT_DCDC_MODE(                                      \
+					DT_STRING_TOKEN_OR(node_id, dcdc_mode, pwm)),              \
+				.aon_clk_src = SE_DT_AON_CLK(                                      \
+					DT_STRING_TOKEN_OR(node_id, aon_clk_src, lfxo)),           \
+				.run_clk_src =                                                     \
+					SE_DT_RUN_CLK(DT_STRING_TOKEN_OR(node_id, clk_src, pll)),  \
+				.cpu_clk_freq = (clock_frequency_t)DT_PROP(node_id, cpu_clk_freq), \
+				.scaled_clk_freq = (scaled_clk_freq_t)DT_PROP_OR(                  \
+					node_id, scaled_clk_freq,                                  \
+					ALIF_SCALED_FREQ_RC_ACTIVE_76_8_MHZ),                      \
+				.memory_blocks = DT_PROP_OR(node_id, memory_blocks, 0),            \
+				.ip_clock_gating = DT_PROP_OR(node_id, ip_clock_gating, 0),        \
+				.phy_pwr_gating = DT_PROP_OR(node_id, phy_pwr_gating, 0),          \
+				.vdd_ioflex_3V3 = (ioflex_mode_t)DT_PROP_OR(                       \
+					node_id, vdd_ioflex, ALIF_IOFLEX_LEVEL_1V8),               \
+			},                                                                         \
+	},
 
 /*
  * Compile-time lookup table
  */
 static const struct aipm_profile_entry aipm_profiles[] = {
-	DT_FOREACH_CHILD_STATUS_OKAY(AIPM_RUN_NODE, AIPM_CHILD_ENTRY)
-};
+	DT_FOREACH_CHILD_STATUS_OKAY(AIPM_RUN_NODE, AIPM_CHILD_ENTRY)};
 
 /*
  * Apply the DTS run profile for a given (state, substate_id).
@@ -125,8 +125,7 @@ static const struct aipm_profile_entry aipm_profiles[] = {
  * run_profile_initialized is already true (avoids overwriting an app-set
  * profile).
  */
-static void se_service_apply_run_profile_for_state(enum pm_state state,
-					       uint8_t substate_id)
+static void se_service_apply_run_profile_for_state(enum pm_state state, uint8_t substate_id)
 {
 	const run_profile_t *default_profile = NULL;
 	const run_profile_t *match = NULL;
@@ -138,7 +137,7 @@ static void se_service_apply_run_profile_for_state(enum pm_state state,
 	for (int i = 0; i < ARRAY_SIZE(aipm_profiles); i++) {
 		if (aipm_profiles[i].is_default) {
 			default_profile = &aipm_profiles[i].profile;
-		} else if (aipm_profiles[i].state   == state &&
+		} else if (aipm_profiles[i].state == state &&
 			   aipm_profiles[i].substate == substate_id) {
 			match = &aipm_profiles[i].profile;
 			break;
@@ -148,8 +147,7 @@ static void se_service_apply_run_profile_for_state(enum pm_state state,
 	const run_profile_t *selected = match ? match : default_profile;
 
 	if (!selected) {
-		LOG_WRN("aipm: no run profile for state %d/%d; skipping",
-			state, substate_id);
+		LOG_WRN("aipm: no run profile for state %d/%d; skipping", state, substate_id);
 		return;
 	}
 
@@ -157,8 +155,7 @@ static void se_service_apply_run_profile_for_state(enum pm_state state,
 	int err = se_service_set_run_cfg((run_profile_t *)selected);
 
 	if (err) {
-		LOG_ERR("aipm: set_run_cfg failed (state %d/%d): %d",
-			state, substate_id, err);
+		LOG_ERR("aipm: set_run_cfg failed (state %d/%d): %d", state, substate_id, err);
 	}
 }
 
@@ -182,61 +179,56 @@ static void se_service_run_profile_pre_device_resume(enum pm_state state)
 
 struct aipm_off_profile_entry {
 	enum pm_state state;
-	uint8_t       substate;
+	uint8_t substate;
 	off_profile_t profile;
 };
 
 /* stby-clk-src */
-#define _SE_DT_CAT_STBY_CLK(t)     _SE_DT_STBY_CLK_##t
-#define SE_DT_STBY_CLK(t)          _SE_DT_CAT_STBY_CLK(t)
-#define _SE_DT_STBY_CLK_hfrc       CLK_SRC_HFRC
-#define _SE_DT_STBY_CLK_hfxo       CLK_SRC_HFXO
-#define _SE_DT_STBY_CLK_pll        CLK_SRC_PLL
+#define _SE_DT_CAT_STBY_CLK(t) _SE_DT_STBY_CLK_##t
+#define SE_DT_STBY_CLK(t)      _SE_DT_CAT_STBY_CLK(t)
+#define _SE_DT_STBY_CLK_hfrc   CLK_SRC_HFRC
+#define _SE_DT_STBY_CLK_hfxo   CLK_SRC_HFXO
+#define _SE_DT_STBY_CLK_pll    CLK_SRC_PLL
 
 /*
  * Expand one aipm-off child node into an aipm_off_profile_entry initialiser.
  * vtor_address is read from the parent node property — a compile-time
  * constant set to the image's default boot address in the SoC DTSI.
  */
-#define AIPM_OFF_CHILD_ENTRY(node_id) {					\
-	.state    = (enum pm_state)DT_PROP(node_id, pm_state),		\
-	.substate = (uint8_t)DT_PROP_OR(node_id, pm_substate, 0),	\
-	.profile  = {							\
-		.power_domains   = DT_PROP_OR(node_id,			\
-				       aipm_power_domains, 0),		\
-		.dcdc_voltage    = DT_PROP_OR(node_id,			\
-				       dcdc_voltage, 825),		\
-		.dcdc_mode       = SE_DT_DCDC_MODE(DT_STRING_TOKEN_OR(	\
-				       node_id, dcdc_mode, off)),	\
-		.aon_clk_src     = SE_DT_AON_CLK(DT_STRING_TOKEN_OR(	\
-				       node_id, aon_clk_src, lfxo)),	\
-		.stby_clk_src    = SE_DT_STBY_CLK(DT_STRING_TOKEN_OR(	\
-				       node_id, stby_clk_src, hfrc)),	\
-		.stby_clk_freq   = (scaled_clk_freq_t)DT_PROP_OR(	\
-				       node_id, stby_clk_freq,		\
-				       ALIF_SCALED_FREQ_RC_STDBY_76_8_MHZ), \
-		.memory_blocks   = DT_PROP_OR(node_id, memory_blocks, 0), \
-		.ip_clock_gating = DT_PROP_OR(node_id,			\
-				       ip_clock_gating, 0),		\
-		.phy_pwr_gating  = DT_PROP_OR(node_id,			\
-				       phy_pwr_gating, 0),		\
-		.vdd_ioflex_3V3  = (ioflex_mode_t)DT_PROP_OR(node_id,	\
-				       vdd_ioflex, ALIF_IOFLEX_LEVEL_1V8), \
-		.wakeup_events   = DT_PROP_OR(node_id,			\
-				       wakeup_events, 0),		\
-		.ewic_cfg        = DT_PROP_OR(node_id, ewic_cfg, 0),	\
-		.vtor_address    = DT_PROP(DT_PARENT(node_id),		\
-				       vtor_address),			\
-		.vtor_address_ns = 0,					\
-	},								\
-},
+#define AIPM_OFF_CHILD_ENTRY(node_id)                                                              \
+	{                                                                                          \
+		.state = (enum pm_state)DT_PROP(node_id, pm_state),                                \
+		.substate = (uint8_t)DT_PROP_OR(node_id, pm_substate, 0),                          \
+		.profile =                                                                         \
+			{                                                                          \
+				.power_domains = DT_PROP_OR(node_id, aipm_power_domains, 0),       \
+				.dcdc_voltage = DT_PROP_OR(node_id, dcdc_voltage, 825),            \
+				.dcdc_mode = SE_DT_DCDC_MODE(                                      \
+					DT_STRING_TOKEN_OR(node_id, dcdc_mode, off)),              \
+				.aon_clk_src = SE_DT_AON_CLK(                                      \
+					DT_STRING_TOKEN_OR(node_id, aon_clk_src, lfxo)),           \
+				.stby_clk_src = SE_DT_STBY_CLK(                                    \
+					DT_STRING_TOKEN_OR(node_id, stby_clk_src, hfrc)),          \
+				.stby_clk_freq = (scaled_clk_freq_t)DT_PROP_OR(                    \
+					node_id, stby_clk_freq,                                    \
+					ALIF_SCALED_FREQ_RC_STDBY_76_8_MHZ),                       \
+				.memory_blocks = DT_PROP_OR(node_id, memory_blocks, 0),            \
+				.ip_clock_gating = DT_PROP_OR(node_id, ip_clock_gating, 0),        \
+				.phy_pwr_gating = DT_PROP_OR(node_id, phy_pwr_gating, 0),          \
+				.vdd_ioflex_3V3 = (ioflex_mode_t)DT_PROP_OR(                       \
+					node_id, vdd_ioflex, ALIF_IOFLEX_LEVEL_1V8),               \
+				.wakeup_events = DT_PROP_OR(node_id, wakeup_events, 0),            \
+				.ewic_cfg = DT_PROP_OR(node_id, ewic_cfg, 0),                      \
+				.vtor_address = DT_PROP(DT_PARENT(node_id), vtor_address),         \
+				.vtor_address_ns = 0,                                              \
+			},                                                                         \
+	},
 
 /*
  * Compile-time lookup table for off profiles.
  */
 static const struct aipm_off_profile_entry aipm_off_profiles[] = {
-	DT_FOREACH_CHILD_STATUS_OKAY(AIPM_OFF_NODE, AIPM_OFF_CHILD_ENTRY)
-};
+	DT_FOREACH_CHILD_STATUS_OKAY(AIPM_OFF_NODE, AIPM_OFF_CHILD_ENTRY)};
 
 /*
  * Find and apply the DTS off profile matching (state, substate_id).
@@ -244,11 +236,10 @@ static const struct aipm_off_profile_entry aipm_off_profiles[] = {
  * Copies the const entry to a local so se_service_set_off_cfg (non-const ptr)
  * can be called cleanly.
  */
-static void se_service_apply_off_profile_for_state(enum pm_state state,
-						   uint8_t substate_id)
+static void se_service_apply_off_profile_for_state(enum pm_state state, uint8_t substate_id)
 {
 	for (int i = 0; i < ARRAY_SIZE(aipm_off_profiles); i++) {
-		if (aipm_off_profiles[i].state   == state &&
+		if (aipm_off_profiles[i].state == state &&
 		    aipm_off_profiles[i].substate == substate_id) {
 			off_profile_t p = aipm_off_profiles[i].profile;
 			int err = se_service_set_off_cfg(&p);
@@ -261,8 +252,7 @@ static void se_service_apply_off_profile_for_state(enum pm_state state,
 			return;
 		}
 	}
-	LOG_DBG("aipm: no off profile for state %d/%d; skipping",
-		state, substate_id);
+	LOG_DBG("aipm: no off profile for state %d/%d; skipping", state, substate_id);
 }
 
 #endif /* CONFIG_ALIF_SE_DTS_OFF_PROFILE */
@@ -318,6 +308,8 @@ typedef union {
 	process_toc_entry_svc_t process_toc_entry_svc_d;
 	otp_data_t otp_svc_d;
 	boot_cpu_svc_t boot_cpu_svc_d;
+	power_setting_svc_t power_setting_svc_d;
+	lp_cmp_configure_svc_t lp_cmp_configure_svc_d;
 } se_service_all_svc_t;
 
 static se_service_all_svc_t se_service_all_svc_d;
@@ -1510,8 +1502,7 @@ int se_service_boot_reset_soc(void)
 	}
 
 	memset(&se_service_all_svc_d, 0, sizeof(se_service_all_svc_d));
-	se_service_all_svc_d.service_header.hdr_service_id =
-					SERVICE_BOOT_RESET_SOC;
+	se_service_all_svc_d.service_header.hdr_service_id = SERVICE_BOOT_RESET_SOC;
 
 	while (i < MAX_TRIES) {
 		err = send_msg_to_se((uint32_t *)&se_service_all_svc_d.service_header,
@@ -1640,12 +1631,12 @@ int se_service_process_toc_entry(const char *image_id)
 	memset(&se_service_all_svc_d, 0, sizeof(se_service_all_svc_d));
 
 	se_service_all_svc_d.process_toc_entry_svc_d.header.hdr_service_id =
-						SERVICE_BOOT_PROCESS_TOC_ENTRY;
-	strncpy((char *) se_service_all_svc_d.process_toc_entry_svc_d.send_entry_id,
-				image_id, IMAGE_NAME_LENGTH);
+		SERVICE_BOOT_PROCESS_TOC_ENTRY;
+	strncpy((char *)se_service_all_svc_d.process_toc_entry_svc_d.send_entry_id, image_id,
+		IMAGE_NAME_LENGTH);
 
 	err = send_msg_to_se((uint32_t *)&se_service_all_svc_d.process_toc_entry_svc_d,
-			sizeof(se_service_all_svc_d.process_toc_entry_svc_d), SERVICE_TIMEOUT);
+			     sizeof(se_service_all_svc_d.process_toc_entry_svc_d), SERVICE_TIMEOUT);
 
 	resp_err = se_service_all_svc_d.process_toc_entry_svc_d.resp_error_code;
 	k_mutex_unlock(&svc_mutex);
@@ -1690,7 +1681,7 @@ int se_service_read_otp(uint32_t otp_offset, uint32_t *otp_word)
 
 	se_service_all_svc_d.otp_svc_d.send_offset = otp_offset;
 	err = send_msg_to_se((uint32_t *)&se_service_all_svc_d.otp_svc_d,
-			sizeof(se_service_all_svc_d.otp_svc_d), SERVICE_TIMEOUT);
+			     sizeof(se_service_all_svc_d.otp_svc_d), SERVICE_TIMEOUT);
 
 	resp_err = se_service_all_svc_d.otp_svc_d.resp_error_code;
 	k_mutex_unlock(&svc_mutex);
@@ -1715,7 +1706,7 @@ int se_service_enable_pd(uint32_t pd_id)
 	run_profile_t runp;
 	int ret;
 
-	if (pd_id >= 32) {  /* power_domains is a uint32_t bitmask */
+	if (pd_id >= 32) { /* power_domains is a uint32_t bitmask */
 		return -EINVAL;
 	}
 
@@ -1750,6 +1741,103 @@ out:
 	return ret;
 }
 
+int se_service_configure_lpcmp(const lpcmp_configure_t *const config)
+{
+	int err;
+
+	/* Ensure SE is ready to receive service calls */
+	err = se_service_ensure_ready();
+	if (err) {
+		return err;
+	}
+
+	err = k_mutex_lock(&svc_mutex, K_MSEC(MUTEX_TIMEOUT));
+	if (err) {
+		LOG_ERR("Unable to lock mutex (err = %d)\n", err);
+		return err;
+	}
+
+	memset(&se_service_all_svc_d, 0, sizeof(se_service_all_svc_d));
+
+	se_service_all_svc_d.lp_cmp_configure_svc_d.header.hdr_service_id =
+		SERVICE_APPLICATION_LPCMP_CONFIGURE_ID;
+
+	/* Disable comparator if NULL is provided */
+	if (config) {
+		se_service_all_svc_d.lp_cmp_configure_svc_d.comp_lp0_hyst = config->comp_lp0_hyst;
+		se_service_all_svc_d.lp_cmp_configure_svc_d.comp_lp0_in_m_sel =
+			config->comp_lp0_in_m_sel;
+		se_service_all_svc_d.lp_cmp_configure_svc_d.comp_lp0_in_p_sel =
+			config->comp_lp0_in_p_sel;
+		se_service_all_svc_d.lp_cmp_configure_svc_d.comp_lp_en = config->comp_lp_en;
+		se_service_all_svc_d.lp_cmp_configure_svc_d.lpcomp_clk32k_en =
+			config->lpcomp_clk32k_en;
+		se_service_all_svc_d.lp_cmp_configure_svc_d.lpcomp_clk_sel = config->lpcomp_clk_sel;
+	}
+
+	err = send_msg_to_se((uint32_t *)&se_service_all_svc_d.lp_cmp_configure_svc_d,
+			     sizeof(se_service_all_svc_d.lp_cmp_configure_svc_d), SERVICE_TIMEOUT);
+
+	const int resp_err = se_service_all_svc_d.lp_cmp_configure_svc_d.resp_error_code;
+
+	k_mutex_unlock(&svc_mutex);
+
+	if (err) {
+		LOG_ERR("service_read_otp failed with %d\n", err);
+		return err;
+	}
+
+	if (resp_err) {
+		LOG_ERR("%s: received response error = %d\n", __func__, resp_err);
+		return resp_err;
+	}
+
+	return 0;
+}
+
+int se_service_power_settings_set(const power_setting_t setting, const uint32_t value)
+{
+	int err;
+
+	/* Ensure SE is ready to receive service calls */
+	err = se_service_ensure_ready();
+	if (err) {
+		return err;
+	}
+
+	err = k_mutex_lock(&svc_mutex, K_MSEC(MUTEX_TIMEOUT));
+	if (err) {
+		LOG_ERR("Unable to lock mutex (err = %d)\n", err);
+		return err;
+	}
+
+	memset(&se_service_all_svc_d, 0, sizeof(se_service_all_svc_d));
+
+	se_service_all_svc_d.power_setting_svc_d.header.hdr_service_id =
+		SERVICE_POWER_SETTING_CONFIG_REQ_ID;
+	se_service_all_svc_d.power_setting_svc_d.send_setting_type = setting;
+	se_service_all_svc_d.power_setting_svc_d.value = value;
+
+	err = send_msg_to_se((uint32_t *)&se_service_all_svc_d.power_setting_svc_d,
+			     sizeof(se_service_all_svc_d.power_setting_svc_d), SERVICE_TIMEOUT);
+
+	const int resp_err = se_service_all_svc_d.power_setting_svc_d.resp_error_code;
+
+	k_mutex_unlock(&svc_mutex);
+
+	if (err) {
+		LOG_ERR("service_read_otp failed with %d\n", err);
+		return err;
+	}
+
+	if (resp_err) {
+		LOG_ERR("%s: received response error = %d\n", __func__, resp_err);
+		return resp_err;
+	}
+
+	return 0;
+}
+
 /**
  * @brief PM notifier callback for SE service state entry
  *
@@ -1766,8 +1854,7 @@ static void se_service_pm_notify_entry(enum pm_state state)
 	{
 		const struct pm_state_info *info = pm_state_next_get(0);
 
-		se_service_apply_off_profile_for_state(info->state,
-						       info->substate_id);
+		se_service_apply_off_profile_for_state(info->state, info->substate_id);
 	}
 #endif
 
@@ -1813,9 +1900,8 @@ int se_service_boot_cpu(uint32_t cpu_id, uint32_t address)
 	se_service_all_svc_d.boot_cpu_svc_d.send_cpu_id = cpu_id;
 	se_service_all_svc_d.boot_cpu_svc_d.send_address = address;
 
-
 	err = send_msg_to_se((uint32_t *)&se_service_all_svc_d.boot_cpu_svc_d,
-			sizeof(se_service_all_svc_d.boot_cpu_svc_d), SERVICE_TIMEOUT);
+			     sizeof(se_service_all_svc_d.boot_cpu_svc_d), SERVICE_TIMEOUT);
 
 	k_mutex_unlock(&svc_mutex);
 
